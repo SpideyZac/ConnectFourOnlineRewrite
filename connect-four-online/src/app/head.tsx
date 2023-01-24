@@ -6,5 +6,5 @@ export default function Head() {
       <meta name="description" content="Literally Connect Four Online" />
       <link rel="icon" href="/favicon.ico" />
     </>
-  )
+  );
 }
