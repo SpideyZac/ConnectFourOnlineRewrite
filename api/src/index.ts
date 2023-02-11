@@ -30,22 +30,22 @@ app.use(mw());
 app.use("*", async (req, res) => {
     const url = req.baseUrl !== "" ? req.baseUrl : "/";
     if (url === "/favicon.ico") return;
-    
+
     const route = routes.find(route => route.path === url ? route : undefined);
 
-    if (!route) return res.status(404).send(`Global Error: ${errors.NOT_FOUND}`);
+    if (!route) return res.status(404).json({ success: false, error: `Global Error: ${errors.NOT_FOUND}` });
 
     try {
         await globalRateLimit.consume(req.clientIp as string, 1);
     } catch (e) {
-        return res.status(429).send(`Global Error: ${errors.RATE_LIMITED}`);
+        return res.status(429).json({ success: false, error: `Global Error: ${errors.RATE_LIMITED}` });
     }
 
     if (route.rateLimiter) {
         try {
             await route.rateLimiter.consume(req.clientIp as string, 1);
         } catch (e) {
-            return res.status(429).send(`Global Error: ${errors.RATE_LIMITED}`);
+            return res.status(429).json({ success: false, error: `Global Error: ${errors.RATE_LIMITED}` });
         }
     }
 
