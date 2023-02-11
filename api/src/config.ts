@@ -4,6 +4,6 @@ export default {
     },
     rateLimitGlobal: {
         points: 10,
-        duration: 2,
+        duration: 3,
     },
 };
