@@ -1,0 +1,29 @@
+{
+  "name": "connect-four-online-api",
+  "version": "1.0.0",
+  "description": "The Backend REST like API for my connect four online game",
+  "main": "./src/index.ts",
+  "scripts": {
+    "dev": "nodemon -w ./src ./src/index.ts",
+    "start": "node ./dist/index.js",
+    "build": "tsc"
+  },
+  "repository": "https://github.com/SpideyZac/ConnectFourOnlineRewrite",
+  "author": "SpideyZac",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/compression": "^1.7.2",
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.13.0",
+    "@types/request-ip": "^0.0.37",
+    "nodemon": "^2.0.20",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.18.2",
+    "helmet": "^6.0.1",
+    "rate-limiter-flexible": "^2.4.1",
+    "request-ip": "^3.3.0"
+  }
+}
