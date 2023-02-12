@@ -6,8 +6,7 @@ import User from "../../schemas/User";
 
 const customRateLimit = new RateLimiterMemory({
     points: 5,
-    duration: 30,
-    blockDuration: 86400,
+    duration: 86400,
 });
 
 export default {
