@@ -12,9 +12,20 @@ import routes from "./routes";
 import errors from "./errors";
 import CustomRequest from "./types/CustomRequest";
 
-const ssl = {
-    key: readFileSync(join(__dirname, "../key.pem")),
-    cert: readFileSync(join(__dirname, "../cert.pem")),
+import mongoose from "mongoose";
+
+mongoose.set("strictQuery", true);
+mongoose.connect(config.databaseSettings.mongoURI, { family: config.databaseSettings.mongoIPFamily }, () => {
+    console.log("Connected to Database!");
+});
+
+let ssl;
+
+if (config.serverSettings.useSSL) {
+    ssl = {
+        key: readFileSync(join(__dirname, "../key.pem")),
+        cert: readFileSync(join(__dirname, "../cert.pem")),
+    }
 }
 
 const globalRateLimit = new RateLimiterMemory({
@@ -47,8 +58,14 @@ app.use("*", async (req, res) => {
     route?.handler(customRequest, res);
 });
 
-const sslServer = createServer(ssl, app);
+if (ssl) {
+    const sslServer = createServer(ssl, app);
 
-sslServer.listen(config.serverSettings.port, () => {
-    console.log(`Server listening at https://localhost:${config.serverSettings.port}`);
-});
+    sslServer.listen(config.serverSettings.port, () => {
+        console.log(`Server listening at https://localhost:${config.serverSettings.port}`);
+    });
+} else {
+    app.listen(config.serverSettings.port, () => {
+        console.log(`Server listening at http://localhost:${config.serverSettings.port}`);
+    });
+}
