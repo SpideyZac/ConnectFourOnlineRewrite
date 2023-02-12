@@ -1,4 +1,4 @@
-import express from "express";
+import express, { json } from "express";
 import helmet from "helmet";
 import compression from "compression";
 import { mw } from "request-ip";
@@ -6,13 +6,11 @@ import { createServer } from "https";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { readFileSync } from "fs";
 import { join } from "path";
+import mongoose from "mongoose";
 
 import config from "./config";
 import routes from "./routes";
-import errors from "./errors";
 import CustomRequest from "./types/CustomRequest";
-
-import mongoose from "mongoose";
 
 mongoose.set("strictQuery", true);
 mongoose.connect(config.databaseSettings.mongoURI, { family: config.databaseSettings.mongoIPFamily }, () => {
@@ -37,6 +35,7 @@ const app = express();
 app.use(helmet());
 app.use(compression());
 app.use(mw());
+app.use(json());
 
 app.use("*", async (req, res) => {
     const url = req.baseUrl !== "" ? req.baseUrl : "/";
@@ -44,18 +43,18 @@ app.use("*", async (req, res) => {
 
     const route = routes.find(route => route.path === url ? route : undefined);
 
-    if (!route) return res.status(404).json({ success: false, error: `Global Error: ${errors.NOT_FOUND}` });
+    if (!route) return res.status(404).json({ success: false, error: "that route was not found" });
 
     try {
         await globalRateLimit.consume(req.clientIp as string, 1);
     } catch (e) {
-        return res.status(429).json({ success: false, error: `Global Error: ${errors.RATE_LIMITED}` });
+        return res.status(429).json({ success: false, error: "you were rate limited" });
     }
 
     const customRequest: CustomRequest = req;
     customRequest.config = config;
 
-    route?.handler(customRequest, res);
+    await route?.handler(customRequest, res);
 });
 
 if (ssl) {
