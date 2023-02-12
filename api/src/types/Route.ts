@@ -1,10 +1,9 @@
-import { RateLimiterMemory } from "rate-limiter-flexible";
 import { Response } from "express";
 
 import CustomRequest from "./CustomRequest";
 
 export default interface Route {
+    [k: string]: any
     path: string
-    rateLimiter?: RateLimiterMemory
     handler: (req: CustomRequest, res: Response) => Promise<void> | void
 };

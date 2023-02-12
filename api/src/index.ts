@@ -41,14 +41,6 @@ app.use("*", async (req, res) => {
         return res.status(429).json({ success: false, error: `Global Error: ${errors.RATE_LIMITED}` });
     }
 
-    if (route.rateLimiter) {
-        try {
-            await route.rateLimiter.consume(req.clientIp as string, 1);
-        } catch (e) {
-            return res.status(429).json({ success: false, error: `Global Error: ${errors.RATE_LIMITED}` });
-        }
-    }
-
     const customRequest: CustomRequest = req;
     customRequest.config = config;
 
